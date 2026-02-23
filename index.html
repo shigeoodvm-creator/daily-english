@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Daily English (Parent & Kid)</title>
+  <meta name="theme-color" content="#111111" />
+  <style>
+    :root { --bg:#0b0b0c; --card:#151518; --txt:#f4f4f5; --muted:#b3b3bb; --line:#2a2a30; }
+    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: linear-gradient(180deg, #0b0b0c, #070708); color: var(--txt); }
+    .wrap{ max-width: 900px; margin: 0 auto; padding: 18px 14px 28px; }
+    .topbar{ display:flex; gap:10px; align-items:flex-start; justify-content:space-between; }
+    .title{ font-size:18px; font-weight:800; letter-spacing:.2px; }
+    .sub{ color:var(--muted); font-size:12px; margin-top:4px; line-height:1.35; }
+    .pill{ display:inline-flex; gap:8px; align-items:center; padding:8px 10px; border:1px solid var(--line); border-radius:999px;
+      background: rgba(255,255,255,.03); font-size:12px; color:var(--muted); }
+    .grid{ margin-top:14px; display:grid; grid-template-columns: 1.1fr .9fr; gap:12px; }
+    @media (max-width: 880px){ .grid{ grid-template-columns: 1fr; } }
+    .card{ background: rgba(255,255,255,.03); border:1px solid var(--line); border-radius:18px; padding:14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .h{ font-size:13px; font-weight:800; color:#e7e7ea; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .mini{ font-size:11px; color:var(--muted); }
+    .dlg{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
+    .line{ border:1px solid var(--line); border-radius:16px; padding:12px; background: rgba(255,255,255,.02); }
+    .who{ font-size:11px; color:var(--muted); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .en{ font-size:18px; font-weight:800; margin-top:6px; line-height:1.25; }
+    .ja{ margin-top:6px; color:var(--muted); font-size:13px; line-height:1.35; }
+    .btnrow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    button, select, input[type="range"]{
+      border-radius:14px; border:1px solid var(--line); background: rgba(255,255,255,.03); color: var(--txt);
+      padding:10px 12px; font-size:13px;
+    }
+    button{ cursor:pointer; }
+    button:hover{ background: rgba(255,255,255,.07); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+    select{ padding:10px 10px; }
+    .controls{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; }
+    @media (max-width: 520px){ .controls{ grid-template-columns: 1fr; } }
+    .kv{ display:flex; gap:10px; align-items:center; justify-content:space-between; }
+    .kv label{ color:var(--muted); font-size:12px; }
+    .kv .val{ font-size:12px; color:#d9d9df; }
+    .hr{ height:1px; background: var(--line); margin:12px 0; }
+    .note{ color: var(--muted); font-size:12px; line-height:1.45; }
+    .ok{ color:#b7f7c8; }
+    .warn{ color:#ffd28a; }
+    .badge{ font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
+    .streak{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    .streak .box{ border:1px solid var(--line); border-radius:16px; padding:10px 12px; background: rgba(255,255,255,.02); }
+    .streak .n{ font-size:18px; font-weight:900; }
+    .streak .t{ font-size:11px; color:var(--muted); margin-top:2px; }
+    .small{ font-size:11px; color:var(--muted); }
+    .kbd{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 11px; }
+    a{ color:#c6d4ff; }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <div class="title">Daily English（親子英会話）</div>
+      <div class="sub" id="todayText"></div>
+    </div>
+    <div class="pill" title="ローカル保存（端末内）">
+      <span>📌</span><span id="scenePill">—</span><span class="badge" id="levelPill">Lv1</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Dialogue -->
+    <div class="card">
+      <div class="h">
+        <span>今日の会話</span>
+        <span class="mini" id="idText">—</span>
+      </div>
+
+      <div class="dlg">
+        <div class="line">
+          <div class="who">
+            <span>👨‍👩‍👧 Parent</span>
+            <span class="small">Aライン</span>
+          </div>
+          <div class="en" id="a_en">—</div>
+          <div class="ja" id="a_ja">—</div>
+          <div class="btnrow">
+            <button id="speakA">🔊 A を読む</button>
+            <button id="repeatA">🔁 A を3回</button>
+          </div>
+        </div>
+
+        <div class="line">
+          <div class="who">
+            <span>🧒 Kid</span>
+            <span class="small">Bライン</span>
+          </div>
+          <div class="en" id="b_en">—</div>
+          <div class="ja" id="b_ja">—</div>
+          <div class="btnrow">
+            <button id="speakB">🔊 B を読む</button>
+            <button id="repeatB">🔁 B を3回</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="h">
+        <span>練習メニュー</span>
+        <span class="mini">子どもと交互に</span>
+      </div>
+
+      <div class="btnrow" style="margin-top:10px;">
+        <button id="speakAll">🎧 A→B を読む</button>
+        <button id="shadow">🗣️ シャドーイング（A→B ×2）</button>
+        <button id="newOne">🔁 別の会話</button>
+      </div>
+
+      <div class="hr"></div>
+      <div class="note">
+        <div>✅ コツ：まず <b>ゆっくり</b>で意味を理解 → ふつう → 速い。</div>
+        <div>✅ 「Aは親」「Bは子」など役割を固定すると続きます。</div>
+      </div>
+    </div>
+
+    <!-- Settings / Recording -->
+    <div class="card">
+      <div class="h">
+        <span>発音（読み上げ）設定</span>
+        <span class="mini">端末の音声を使用</span>
+      </div>
+
+      <div class="controls">
+        <div class="kv">
+          <label>声（英語の声推奨）</label>
+          <select id="voiceSel" style="min-width: 220px;"></select>
+        </div>
+
+        <div class="kv">
+          <label>アクセント</label>
+          <select id="langSel">
+            <option value="en-US">en-US（米）</option>
+            <option value="en-GB">en-GB（英）</option>
+            <option value="en-AU">en-AU（豪）</option>
+          </select>
+        </div>
+
+        <div class="kv">
+          <label>速度</label>
+          <div style="display:flex; gap:10px; align-items:center; width: 100%;">
+            <input id="rate" type="range" min="0.75" max="1.2" step="0.05" value="1.0" style="flex:1;">
+            <span class="val" id="rateVal">1.00</span>
+          </div>
+        </div>
+
+        <div class="kv">
+          <label>間（ms）</label>
+          <div style="display:flex; gap:10px; align-items:center; width: 100%;">
+            <input id="gap" type="range" min="150" max="900" step="50" value="400" style="flex:1;">
+            <span class="val" id="gapVal">400</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="h">
+        <span>録音して聞き比べ</span>
+        <span class="mini">自分の声</span>
+      </div>
+
+      <div class="btnrow" style="margin-top:10px;">
+        <button id="recStart">⏺️ 録音開始</button>
+        <button id="recStop" disabled>⏹️ 停止</button>
+        <button id="recPlay" disabled>▶️ 再生</button>
+        <button id="recClear" disabled>🗑️ クリア</button>
+      </div>
+
+      <div class="note" id="recNote" style="margin-top:10px;">
+        <div class="warn">※ iPhoneで録音を使うには、Safariで「HTTPSのページ」として開く必要があります（後述）。</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="h">
+        <span>継続</span>
+        <span class="mini">端末に保存</span>
+      </div>
+
+      <div class="streak">
+        <div class="box">
+          <div class="n" id="streakN">0</div>
+          <div class="t">連続日数</div>
+        </div>
+        <div class="box">
+          <div class="n" id="doneN">0</div>
+          <div class="t">合計完了日</div>
+        </div>
+      </div>
+
+      <div class="btnrow" style="margin-top:10px;">
+        <button id="markDone">✅ 今日やった（完了）</button>
+        <button id="resetProg">♻️ リセット</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="note small">
+        <div>保存：<span class="kbd">localStorage</span> を使用（端末内）。</div>
+        <div>録音：<span class="kbd">MediaRecorder</span> が必要。対応状況は端末/OSで変わります。:contentReference[oaicite:1]{index=1}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px;">
+    <div class="h">
+      <span>メモ（親向け）</span>
+      <span class="mini">学びを毎日1分で</span>
+    </div>
+    <div class="note" style="margin-top:10px;">
+      <div>・「今日の会話」を1日1つだけ。増やしすぎない。</div>
+      <div>・子どもが言えたら、意味より先に <b>“通じた体験”</b> を作る。</div>
+      <div>・音声が不自然なら、iPhone側の英語音声（Siri音声など）を選ぶと改善することがあります（端末の音声に依存）。:contentReference[oaicite:2]{index=2}</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/** ============ データ（会話集） ============
+ * 追加する時は同じ形式でOK:
+ * { id:"S01", scene:"朝", level:1, a:{en:"",ja:""}, b:{en:"",ja:""} }
+ */
+const DIALOGS = [
+  { id:"S01", scene:"朝", level:1,
+    a:{ en:"Good morning! Did you sleep well?", ja:"おはよう！よく眠れた？" },
+    b:{ en:"Yes! I feel great.", ja:"うん！元気だよ。" } },
+  { id:"S02", scene:"学校前", level:1,
+    a:{ en:"Are you ready to go?", ja:"行く準備できた？" },
+    b:{ en:"Almost. One minute!", ja:"もうちょっと。1分！" } },
+  { id:"S03", scene:"ごはん", level:1,
+    a:{ en:"What do you want for dinner?", ja:"夕ご飯は何がいい？" },
+    b:{ en:"How about curry?", ja:"カレーはどう？" } },
+  { id:"S04", scene:"片付け", level:1,
+    a:{ en:"Let’s clean up together.", ja:"一緒に片付けよう。" },
+    b:{ en:"Okay. Where should I start?", ja:"いいよ。どこからやる？" } },
+  { id:"S05", scene:"買い物", level:1,
+    a:{ en:"Let’s make a shopping list.", ja:"買い物リスト作ろう。" },
+    b:{ en:"We need milk and eggs.", ja:"牛乳と卵がいるね。" } },
+  { id:"S06", scene:"宿題", level:2,
+    a:{ en:"Do you need help with your homework?", ja:"宿題、手伝おうか？" },
+    b:{ en:"Yes, please. This is hard.", ja:"うん、お願い。むずかしい。" } },
+  { id:"S07", scene:"感謝", level:2,
+    a:{ en:"Thank you for helping me.", ja:"手伝ってくれてありがとう。" },
+    b:{ en:"No problem!", ja:"どういたしまして！" } },
+  { id:"S08", scene:"体調", level:2,
+    a:{ en:"Are you okay? You look tired.", ja:"大丈夫？疲れて見えるよ。" },
+    b:{ en:"I’m fine. I just need a rest.", ja:"大丈夫。ちょっと休めば平気。" } },
+  { id:"S09", scene:"お風呂", level:1,
+    a:{ en:"Bath time! Let’s go.", ja:"お風呂だよ。行こう。" },
+    b:{ en:"Can I play for five more minutes?", ja:"あと5分遊んでいい？" } },
+  { id:"S10", scene:"寝る前", level:1,
+    a:{ en:"Time for bed. Sweet dreams!", ja:"寝る時間だよ。いい夢見てね！" },
+    b:{ en:"Good night. I love you!", ja:"おやすみ。大好き！" } },
+];
+
+const $ = (id)=>document.getElementById(id);
+
+// ---------- 日付で「今日の会話」固定 ----------
+function ymd(d=new Date()){
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,"0");
+  const da=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${da}`;
+}
+function hashStr(s){
+  let h=0;
+  for(const ch of s){ h = (h*31 + ch.charCodeAt(0)) >>> 0; }
+  return h>>>0;
+}
+function pickTodayIndex(){
+  const key = ymd();
+  return hashStr(key) % DIALOGS.length;
+}
+
+let todayIndex = pickTodayIndex();
+let currentIndex = todayIndex;
+
+// ---------- UI反映 ----------
+function renderDialog(idx){
+  const d = DIALOGS[idx];
+  $("a_en").textContent = d.a.en;
+  $("a_ja").textContent = d.a.ja;
+  $("b_en").textContent = d.b.en;
+  $("b_ja").textContent = d.b.ja;
+  $("scenePill").textContent = d.scene;
+  $("levelPill").textContent = `Lv${d.level}`;
+  $("idText").textContent = `${d.id} / 全${DIALOGS.length}`;
+  const now = new Date();
+  $("todayText").textContent = `${now.toLocaleDateString("ja-JP", { weekday:"short", year:"numeric", month:"short", day:"numeric" })} の1フレーズ`;
+}
+renderDialog(currentIndex);
+
+// ---------- 音声読み上げ（Web Speech API: SpeechSynthesis） ----------
+let voices = [];
+function loadVoices(){
+  if(!("speechSynthesis" in window)) return;
+  voices = window.speechSynthesis.getVoices() || [];
+  const sel = $("voiceSel");
+  sel.innerHTML = "";
+
+  const preferLang = $("langSel").value || "en-US";
+  const sorted = [...voices].sort((a,b)=>{
+    const ae = a.lang.startsWith("en") ? 0 : 1;
+    const be = b.lang.startsWith("en") ? 0 : 1;
+    if(ae!==be) return ae-be;
+    const ap = (a.lang===preferLang) ? 0 : 1;
+    const bp = (b.lang===preferLang) ? 0 : 1;
+    if(ap!==bp) return ap-bp;
+    return a.name.localeCompare(b.name);
+  });
+
+  for(const v of sorted){
+    const opt = document.createElement("option");
+    opt.value = v.name;
+    opt.textContent = `${v.name} (${v.lang})`;
+    sel.appendChild(opt);
+  }
+  // デフォルト：英語＆選択アクセントに近い声
+  const first = sorted.find(v => v.lang === preferLang) || sorted.find(v => v.lang.startsWith("en"));
+  if(first) sel.value = first.name;
+}
+if("speechSynthesis" in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function speak(text){
+  if(!("speechSynthesis" in window)){
+    alert("このブラウザは読み上げに対応していません（Chrome/Edge/Safariで試してください）。");
+    return;
+  }
+  const uttr = new SpeechSynthesisUtterance(text);
+  uttr.lang = $("langSel").value || "en-US";
+  uttr.rate = parseFloat($("rate").value || "1.0");
+
+  const selectedName = $("voiceSel").value;
+  const v = voices.find(x => x.name === selectedName);
+  if(v) uttr.voice = v;
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(uttr);
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+async function speakSequence(lines, times=1){
+  const gap = parseInt($("gap").value || "400", 10);
+  for(let t=0; t<times; t++){
+    for(const line of lines){
+      speak(line);
+      // 読み上げ終了を厳密に待つのは環境差があるので、簡易に文字数で待つ
+      const approx = Math.min(2800, 500 + line.length * 70);
+      await sleep(approx + gap);
+    }
+    await sleep(gap);
+  }
+}
+
+// ボタン
+$("speakA").onclick = ()=> speak(DIALOGS[currentIndex].a.en);
+$("speakB").onclick = ()=> speak(DIALOGS[currentIndex].b.en);
+$("speakAll").onclick = ()=> speakSequence([DIALOGS[currentIndex].a.en, DIALOGS[currentIndex].b.en], 1);
+$("repeatA").onclick = ()=> speakSequence([DIALOGS[currentIndex].a.en], 3);
+$("repeatB").onclick = ()=> speakSequence([DIALOGS[currentIndex].b.en], 3);
+$("shadow").onclick  = ()=> speakSequence([DIALOGS[currentIndex].a.en, DIALOGS[currentIndex].b.en], 2);
+
+$("newOne").onclick = ()=>{
+  // 今日の固定から「別の1つ」に切り替え（毎回同じになりにくい）
+  currentIndex = (currentIndex + 1) % DIALOGS.length;
+  renderDialog(currentIndex);
+};
+
+$("langSel").onchange = loadVoices;
+
+$("rate").oninput = ()=> $("rateVal").textContent = Number($("rate").value).toFixed(2);
+$("gap").oninput  = ()=> $("gapVal").textContent  = String($("gap").value);
+$("rateVal").textContent = Number($("rate").value).toFixed(2);
+$("gapVal").textContent  = String($("gap").value);
+
+// ---------- 継続（streak） ----------
+const K = {
+  lastDone: "daily_english_last_done",
+  streak: "daily_english_streak",
+  doneTotal: "daily_english_done_total"
+};
+
+function loadProg(){
+  const last = localStorage.getItem(K.lastDone) || "";
+  const streak = parseInt(localStorage.getItem(K.streak) || "0", 10);
+  const doneTotal = parseInt(localStorage.getItem(K.doneTotal) || "0", 10);
+  $("streakN").textContent = String(streak);
+  $("doneN").textContent = String(doneTotal);
+
+  // 今日が完了ならボタン状態を少し変える
+  const today = ymd();
+  if(last === today){
+    $("markDone").textContent = "✅ 今日やった（完了済）";
+  } else {
+    $("markDone").textContent = "✅ 今日やった（完了）";
+  }
+}
+function dateMinus1(d){
+  const x = new Date(d.getTime());
+  x.setDate(x.getDate()-1);
+  return x;
+}
+
+$("markDone").onclick = ()=>{
+  const today = ymd();
+  const last = localStorage.getItem(K.lastDone) || "";
+
+  if(last === today){
+    loadProg();
+    return;
+  }
+
+  let streak = parseInt(localStorage.getItem(K.streak) || "0", 10);
+  const doneTotal = parseInt(localStorage.getItem(K.doneTotal) || "0", 10);
+
+  const yest = ymd(dateMinus1(new Date()));
+  if(last === yest) streak += 1;
+  else streak = 1;
+
+  localStorage.setItem(K.lastDone, today);
+  localStorage.setItem(K.streak, String(streak));
+  localStorage.setItem(K.doneTotal, String(doneTotal + 1));
+
+  loadProg();
+};
+
+$("resetProg").onclick = ()=>{
+  if(confirm("継続データをリセットします。よろしいですか？")){
+    localStorage.removeItem(K.lastDone);
+    localStorage.removeItem(K.streak);
+    localStorage.removeItem(K.doneTotal);
+    loadProg();
+  }
+};
+loadProg();
+
+// ---------- 録音（MediaRecorder） ----------
+let mediaStream = null;
+let recorder = null;
+let chunks = [];
+let recordedBlob = null;
+let recordedUrl = null;
+let audio = new Audio();
+
+function setRecState(hasAudio){
+  $("recPlay").disabled = !hasAudio;
+  $("recClear").disabled = !hasAudio;
+}
+
+async function startRecording(){
+  // HTTPS等のセキュアコンテキストでないとマイク許可が出ないことが多い
+  // （特に file:// で開いた場合はブロックされがち）
+  try{
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      $("recNote").innerHTML = `<div class="warn">この環境では録音が使えません（getUserMedia非対応）。</div>`;
+      return;
+    }
+    // すでに残ってるのがあれば停止
+    if(mediaStream){
+      mediaStream.getTracks().forEach(t=>t.stop());
+      mediaStream = null;
+    }
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+
+    if(typeof MediaRecorder === "undefined"){
+      $("recNote").innerHTML = `<div class="warn">この環境では録音が使えません（MediaRecorder非対応）。</div>`;
+      mediaStream.getTracks().forEach(t=>t.stop());
+      mediaStream = null;
+      return;
+    }
+
+    chunks = [];
+    recordedBlob = null;
+    if(recordedUrl){ URL.revokeObjectURL(recordedUrl); recordedUrl = null; }
+
+    recorder = new MediaRecorder(mediaStream);
+    recorder.ondataavailable = (e)=>{ if(e.data && e.data.size>0) chunks.push(e.data); };
+    recorder.onstop = ()=>{
+      recordedBlob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+      recordedUrl = URL.createObjectURL(recordedBlob);
+      audio.src = recordedUrl;
+      setRecState(true);
+      $("recNote").innerHTML = `<div class="ok">録音できました。▶️再生で聞き比べできます。</div>`;
+    };
+
+    recorder.start();
+    $("recStart").disabled = true;
+    $("recStop").disabled = false;
+    $("recNote").innerHTML = `<div class="ok">録音中…（止めたい時に ⏹️停止）</div>`;
+  }catch(err){
+    $("recNote").innerHTML = `<div class="warn">録音できませんでした：${(err && err.name) ? err.name : err}</div>
+    <div class="small">iPhoneは「HTTPSのページ」で開く必要があります（後述）。</div>`;
+  }
+}
+
+function stopRecording(){
+  try{
+    if(recorder && recorder.state !== "inactive") recorder.stop();
+  }catch(e){}
+  $("recStart").disabled = false;
+  $("recStop").disabled = true;
+
+  if(mediaStream){
+    mediaStream.getTracks().forEach(t=>t.stop());
+    mediaStream = null;
+  }
+}
+
+$("recStart").onclick = startRecording;
+$("recStop").onclick = stopRecording;
+$("recPlay").onclick = ()=> audio.play();
+$("recClear").onclick = ()=>{
+  stopRecording();
+  chunks = [];
+  recordedBlob = null;
+  if(recordedUrl){ URL.revokeObjectURL(recordedUrl); recordedUrl = null; }
+  audio.src = "";
+  setRecState(false);
+  $("recNote").innerHTML = `<div class="warn">録音データをクリアしました。</div>`;
+};
+setRecState(false);
+</script>
+</body>
+</html>
